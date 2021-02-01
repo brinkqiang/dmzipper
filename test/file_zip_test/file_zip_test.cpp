@@ -1,7 +1,6 @@
 //#include "catch.hpp"
 
-#include <zipper.h>
-#include <unzipper.h>
+#include <dmzipper.h>
 #include <tools.h>
 
 #include <vector>
