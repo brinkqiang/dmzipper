@@ -43,6 +43,7 @@
  *
  * Contains the declarations for the opendir()/readdir() API.
  */
+#ifdef _WIN32
 
 #ifndef SYNSOFT_UNIXEM_INCL_H_DIRENT
 #define SYNSOFT_UNIXEM_INCL_H_DIRENT
@@ -155,3 +156,5 @@ struct dirent   *readdir(DIR *dir);
 #endif /* SYNSOFT_UNIXEM_INCL_H_DIRENT */
 
 /* ////////////////////////////////////////////////////////////////////////// */
+
+#endif
