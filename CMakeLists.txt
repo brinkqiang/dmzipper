@@ -14,25 +14,13 @@ SET(DMZIPPER_VERSION "${DMZIPPER_VERSION_MAJOR}.${DMZIPPER_VERSION_MINOR}.${DMZI
 
 MESSAGE(STATUS "VERSION: ${DMZIPPER_VERSION}")
 
-OPTION(USE_DMZIPPER "use dmzipper" OFF)
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/dmzipper_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/dmzipper_config.h)
+OPTION(USE_DMZIPPER "use dmzipper" ON)
 
-LibImport("dmzipper_module" "src/dmzipper_module")
-ExeImport("test" "dmzipper_module")
+add_definitions( -DUSE_ZLIB )
 
-#ADD_CUSTOM_COMMAND(
-#TARGET dmzippertest
-#PRE_BUILD
-#COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#${CMAKE_CURRENT_SOURCE_DIR}/config/test.csv
-#$<TARGET_FILE_DIR:dmzippertest>
-#)
+ModuleImport("dmzlib" "thirdparty/dmzlib")
+LibImportDepends("minizip" "src/minizip" "zlibstatic")
+LibImportDepends("dmzipper" "src/dmzipper" "minizip")
 
-#INSTALL(DIRECTORY include/ DESTINATION include)
-#INSTALL(TARGETS dmzipper
-#        RUNTIME DESTINATION bin
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib)
+ExeImport("test" "dmzipper")
 
-#SET(DMZIPPER_LIBS "dmzipper")
-#MARK_AS_ADVANCED(${DMZIPPER_LIBS})
