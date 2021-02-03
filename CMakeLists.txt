@@ -19,8 +19,10 @@ OPTION(USE_DMZIPPER "use dmzipper" ON)
 add_definitions( -DUSE_ZLIB )
 
 ModuleImport("dmzlib" "thirdparty/dmzlib")
+ModuleImport("dmtest" "thirdparty/dmtest")
+
 LibImportDepends("minizip" "src/minizip" "zlibstatic")
 LibImportDepends("dmzipper" "src/dmzipper" "minizip")
 
-ExeImport("test" "dmzipper")
+ExeImport("test" "dmzipper;dmtest")
 
