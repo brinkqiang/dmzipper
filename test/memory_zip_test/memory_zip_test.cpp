@@ -7,10 +7,11 @@
 #include <fstream>
 #include <ostream>
 #include <string>
+#include "gtest.h"
 
 using namespace zipper;
 
-int main()
+TEST(memory_zip_test, memory_zip_test)
 {
     std::vector<unsigned char> zipvec;
     zipper::Zipper zipper(zipvec);
@@ -31,7 +32,69 @@ int main()
 
     zipper::Unzipper unzipper(zipvec);
 
-    return 0;
+    ASSERT_TRUE(unzipper.entries().size() == 1);
+    ASSERT_TRUE(unzipper.entries().front().name == "test1.txt");
+
+    unzipper.extractEntry("test1.txt");
+    // due to sections forking or creating different stacks we need to make sure the local instance is closed to
+    // prevent mixing the closing when both instances are freed at the end of the scope
+    unzipper.close();
+
+    ASSERT_TRUE(checkFileExists("test1.txt"));
+
+    std::ifstream testfile("test1.txt");
+    ASSERT_TRUE(testfile.good());
+
+    std::string test((std::istreambuf_iterator<char>(testfile)),
+                     std::istreambuf_iterator<char>());
+    testfile.close();
+    ASSERT_TRUE(test == "test file compression");
+
+    std::ofstream test2("test2.dat");
+    test2 << "other data to compression test";
+    test2.flush();
+    test2.close();
+
+    std::ifstream test2stream("test2.dat");
+
+    zipper.open();
+    zipper.add(test2stream, "TestFolder/test2.dat");
+    zipper.close();
+
+    test2stream.close();
+    std::remove("test2.dat");
+
+    {
+        zipper::Unzipper unzipper(zipvec);
+
+        ASSERT_TRUE(unzipper.entries().size() == 2);
+        ASSERT_TRUE(unzipper.entries().front().name == "test1.txt");
+        ASSERT_TRUE(unzipper.entries()[1].name == "TestFolder/test2.dat");
+
+        unzipper.extract();
+
+        ASSERT_TRUE(checkFileExists("TestFolder/test2.dat"));
+
+        std::ifstream testfile("TestFolder/test2.dat");
+        ASSERT_TRUE(testfile.good());
+
+        std::string test((std::istreambuf_iterator<char>(testfile)),
+                         std::istreambuf_iterator<char>());
+        testfile.close();
+        ASSERT_TRUE(test == "other data to compression test");
+
+        std::vector<unsigned char> resvec;
+        unzipper.extractEntryToMemory("TestFolder/test2.dat", resvec);
+        unzipper.close();
+        {
+            std::string test(resvec.begin(), resvec.end());
+
+            ASSERT_TRUE(test == "other data to compression test");
+        }
+    }
+
+    std::remove("test1.txt");
+    removeFolder("TestFolder");
 }
 
 //
