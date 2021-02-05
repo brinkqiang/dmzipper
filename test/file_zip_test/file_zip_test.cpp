@@ -1,4 +1,3 @@
-//#include "catch.hpp"
 
 #include <dmzipper.h>
 #include <tools.h>
