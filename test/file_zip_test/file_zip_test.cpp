@@ -86,9 +86,6 @@ TEST(zipfile, zipfile)
     {
         std::ifstream testfile("TestFolder/test2.dat");
         ASSERT_TRUE(testfile.good());
-    }
-
-    {
         std::string test((std::istreambuf_iterator<char>(testfile)),
                          std::istreambuf_iterator<char>());
         testfile.close();
