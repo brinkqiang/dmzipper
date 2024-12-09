@@ -24,5 +24,6 @@ ModuleImport("dmtest" "thirdparty/dmtest")
 LibImportDepends("minizip" "src/minizip" "zlibstatic")
 LibImportDepends("dmzipper" "src/dmzipper" "minizip")
 
-ExeImport("test" "dmzipper;dmtest")
-
+if (PROJECT_IS_TOP_LEVEL)
+    ExeImport("test" "dmzipper;dmtest")
+endif(PROJECT_IS_TOP_LEVEL)
